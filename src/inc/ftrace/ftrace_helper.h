@@ -1,3 +1,7 @@
+/*
+ * based on https://github.com/xcellerator/linux_kernel_hacking/blob/master/3_RootkitTechniques/3.3_set_root/ftrace_helper.h
+ */
+
 #ifndef FTRACE_HELPER_H
 #define FTRACE_HELPER_H
 
