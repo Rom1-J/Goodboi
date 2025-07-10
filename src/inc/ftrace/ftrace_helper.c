@@ -1,10 +1,6 @@
 #include "ftrace_helper.h"
 #include "../logger/logger.h"
 
-#include <linux/kernel.h>
-#include <linux/module.h>
-#include <linux/uaccess.h>
-
 // ////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////
 
@@ -20,14 +16,13 @@
 static int fh_resolve_hook_address(struct ftrace_hook *hook) {
 #ifdef KPROBE_LOOKUP
     typedef unsigned long (*kallsyms_lookup_name_t)(const char *name);
-    kallsyms_lookup_name_t kallsyms_lookup_name;
 
     if (register_kprobe(&kp) != 0) {
         rk_err("failed to register kprobe for kallsyms_lookup_name\n");
         return -EINVAL;
     }
 
-    kallsyms_lookup_name = (kallsyms_lookup_name_t) kp.addr;
+    const kallsyms_lookup_name_t kallsyms_lookup_name = (kallsyms_lookup_name_t) kp.addr;
     unregister_kprobe(&kp);
 #endif
 
@@ -38,9 +33,9 @@ static int fh_resolve_hook_address(struct ftrace_hook *hook) {
     }
 
 #if USE_FENTRY_OFFSET
-    *((unsigned long *)hook->original) = hook->address + MCOUNT_INSN_SIZE;
+    *(unsigned long *)hook->original = hook->address + MCOUNT_INSN_SIZE;
 #else
-    *((unsigned long *)hook->original) = hook->address;
+    *(unsigned long *)hook->original = hook->address;
 #endif
 
     return 0;
@@ -51,7 +46,7 @@ static int fh_resolve_hook_address(struct ftrace_hook *hook) {
 
 static void notrace fh_ftrace_thunk(
     unsigned long ip,
-    unsigned long parent_ip,
+    const unsigned long parent_ip,
     struct ftrace_ops *ops,
     struct pt_regs *regs
 ) {
@@ -71,8 +66,7 @@ static void notrace fh_ftrace_thunk(
 int fh_install_hook(struct ftrace_hook *hook) {
     int err;
 
-    err = fh_resolve_hook_address(hook);
-    if (err)
+    if ((err = fh_resolve_hook_address(hook)))
         return err;
 
     hook->ops.func = (ftrace_func_t)fh_ftrace_thunk;
@@ -80,15 +74,13 @@ int fh_install_hook(struct ftrace_hook *hook) {
                     | FTRACE_OPS_FL_RECURSION
                     | FTRACE_OPS_FL_IPMODIFY;
 
-    err = ftrace_set_filter_ip(&hook->ops, hook->address, 0, 0);
-    if (err) {
+    if ((err = ftrace_set_filter_ip(&hook->ops, hook->address, 0, 0))) {
         rk_err("ftrace_set_filter_ip() failed: %d\n", err);
 
         return err;
     }
 
-    err = register_ftrace_function(&hook->ops);
-    if (err) {
+    if ((err = register_ftrace_function(&hook->ops))) {
         rk_err("register_ftrace_function() failed: %d\n", err);
         ftrace_set_filter_ip(&hook->ops, hook->address, 1, 0);
 
@@ -103,19 +95,17 @@ int fh_install_hook(struct ftrace_hook *hook) {
 void fh_remove_hook(struct ftrace_hook *hook) {
     int err;
 
-    err = unregister_ftrace_function(&hook->ops);
-    if (err)
+    if ((err = unregister_ftrace_function(&hook->ops)))
         rk_err("unregister_ftrace_function() failed: %d\n", err);
 
-    err = ftrace_set_filter_ip(&hook->ops, hook->address, 1, 0);
-    if (err)
+    if ((err = ftrace_set_filter_ip(&hook->ops, hook->address, 1, 0)))
         rk_err("ftrace_set_filter_ip() failed: %d\n", err);
 }
 
 // ////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////
 
-int fh_install_hooks(struct ftrace_hook *hooks, size_t count) {
+int fh_install_hooks(struct ftrace_hook *hooks, const size_t count) {
     size_t i;
     int err;
 
@@ -135,7 +125,7 @@ error:
 
 // ////////////////////////////////////////////////////////////////////
 
-void fh_remove_hooks(struct ftrace_hook *hooks, size_t count) {
+void fh_remove_hooks(struct ftrace_hook *hooks, const size_t count) {
     for (size_t i = 0; i < count; i++)
         fh_remove_hook(&hooks[i]);
 }
