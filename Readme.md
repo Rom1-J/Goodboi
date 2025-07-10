@@ -2,5 +2,5 @@
 
 ```shell
 $ make
-$ sudo insmod build/main.ko
+$ sudo insmod dist/kernelhooker.ko
 ```

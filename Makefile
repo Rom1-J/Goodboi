@@ -1,34 +1,26 @@
+MODULE_NAME := kernelhooker.ko
+
+SRC_DIR := src
 BUILD_DIR := build
-
-SRC_FILES := $(shell find $(CURDIR) -type f -name '*.c')
-REL_SRC_FILES := $(patsubst $(CURDIR)/%, %, $(SRC_FILES))
-OBJ_FILES := $(REL_SRC_FILES:.c=.o)
-
-obj-m += main.o
-main-objs := $(OBJ_FILES)
-
-KBUILD_CFLAGS += -DDEBUG=1
-
-JOBS := $(shell nproc)
-KDIR := /lib/modules/$(shell uname -r)/build
+DIST_DIR := dist
 
 .PHONY: all
-all: prepare build
-
-.PHONY: rebuild
-rebuild: clean prepare build
+all: prepare build serve
 
 .PHONY: prepare
-prepare:
-	mkdir -p $(BUILD_DIR)
-	cp -r $(CURDIR)/src $(BUILD_DIR)
-	cp -r Makefile $(BUILD_DIR)/Makefile
-
-.PHONY: build
-build:
-	$(MAKE) -j$(JOBS) -C $(KDIR) M=$(CURDIR)/$(BUILD_DIR) modules
+prepare: clean
+	cp -r $(SRC_DIR) $(BUILD_DIR)
 
 .PHONY: clean
 clean:
-	$(MAKE) -j$(JOBS) -C $(KDIR) M=$(CURDIR)/$(BUILD_DIR) clean || true
 	rm -rf $(BUILD_DIR)
+	rm -rf $(DIST_DIR)
+
+.PHONY: build
+build:
+	(cd ${BUILD_DIR} && make)
+
+.PHONY: serve
+serve:
+	mkdir $(DIST_DIR)
+	cp $(BUILD_DIR)/$(MODULE_NAME) $(DIST_DIR)/$(MODULE_NAME)
