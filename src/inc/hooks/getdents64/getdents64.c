@@ -28,7 +28,7 @@ asmlinkage long hook_getdents64(const struct pt_regs *regs) {
 
     long ret = real_getdents64(regs);
 
-    rk_info("getdents64() true return: %ld\n", ret);
+    // rk_info("getdents64() true return: %ld\n", ret);
 
     if (ret <= 0)
         return ret;

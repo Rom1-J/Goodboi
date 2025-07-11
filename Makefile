@@ -5,7 +5,7 @@ BUILD_DIR := build
 DIST_DIR := dist
 
 obj-m += $(MODULE_NAME).o
-$(MODULE_NAME)-objs := src/inc/ftrace/ftrace_helper.o src/inc/logger/logger.o src/inc/hooks/execve/execve.o src/inc/hooks/utils.o src/inc/hooks/getdents64/getdents64.o src/entry.o
+$(MODULE_NAME)-objs := src/inc/ftrace/ftrace_helper.o src/inc/logger/logger.o src/inc/hooks/utils.o src/inc/hooks/getdents64/getdents64.o src/inc/hooks/rmdir/rmdir.o src/inc/hooks/execve/execve.o src/inc/shell/dispatcher.o src/inc/shell/parser/parser.o src/inc/shell/commands/sudo/sudo.o src/entry.o
 
 KBUILD_CFLAGS += -DDEBUG=1
 

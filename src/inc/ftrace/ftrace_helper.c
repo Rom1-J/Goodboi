@@ -18,7 +18,7 @@ static int fh_resolve_hook_address(struct ftrace_hook *hook) {
     typedef unsigned long (*kallsyms_lookup_name_t)(const char *name);
 
     if (register_kprobe(&kp) != 0) {
-        rk_err("failed to register kprobe for kallsyms_lookup_name\n");
+        rk_err("[fh_resolve_hook_address] register_kprobe() failed to register kprobe for kallsyms_lookup_name\n");
         return -EINVAL;
     }
 
@@ -28,7 +28,7 @@ static int fh_resolve_hook_address(struct ftrace_hook *hook) {
 
     hook->address = kallsyms_lookup_name(hook->name);
     if (!hook->address) {
-        rk_err("unresolved symbol: %s\n", hook->name);
+        rk_err("[fh_resolve_hook_address] unresolved symbol: %s\n", hook->name);
         return -ENOENT;
     }
 
@@ -75,13 +75,13 @@ int fh_install_hook(struct ftrace_hook *hook) {
                     | FTRACE_OPS_FL_IPMODIFY;
 
     if ((err = ftrace_set_filter_ip(&hook->ops, hook->address, 0, 0))) {
-        rk_err("ftrace_set_filter_ip() failed: %d\n", err);
+        rk_err("[fh_install_hook] ftrace_set_filter_ip() failed: %d\n", err);
 
         return err;
     }
 
     if ((err = register_ftrace_function(&hook->ops))) {
-        rk_err("register_ftrace_function() failed: %d\n", err);
+        rk_err("[fh_install_hook] register_ftrace_function() failed: %d\n", err);
         ftrace_set_filter_ip(&hook->ops, hook->address, 1, 0);
 
         return err;
@@ -96,10 +96,10 @@ void fh_remove_hook(struct ftrace_hook *hook) {
     int err;
 
     if ((err = unregister_ftrace_function(&hook->ops)))
-        rk_err("unregister_ftrace_function() failed: %d\n", err);
+        rk_err("[fh_remove_hook] unregister_ftrace_function() failed: %d\n", err);
 
     if ((err = ftrace_set_filter_ip(&hook->ops, hook->address, 1, 0)))
-        rk_err("ftrace_set_filter_ip() failed: %d\n", err);
+        rk_err("[fh_remove_hook] ftrace_set_filter_ip() failed: %d\n", err);
 }
 
 // ////////////////////////////////////////////////////////////////////

@@ -8,9 +8,9 @@
 
 // ////////////////////////////////////////////////////////////////////
 
-#include "inc/hooks/execve/execve.h"
-#include "inc/hooks/execve/execve.h"
-#include "inc/hooks/getdents64/getdents64.h"
+// #include "inc/hooks/execve/execve.h"
+// #include "inc/hooks/getdents64/getdents64.h"
+#include "inc/hooks/rmdir/rmdir.h"
 
 // ////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////
@@ -28,8 +28,9 @@ int err;
 // ////////////////////////////////////////////////////////////////////
 
 struct ftrace_hook dir_hooks[] = {
+    // HOOK("sys_getdents64", hook_getdents64, &real_getdents64),
     // HOOK("sys_execve", hook_execve, &real_execve),
-    HOOK("sys_getdents64", hook_getdents64, &real_getdents64),
+    HOOK("sys_rmdir", hook_rmdir, &real_rmdir),
 };
 
 // ////////////////////////////////////////////////////////////////////
