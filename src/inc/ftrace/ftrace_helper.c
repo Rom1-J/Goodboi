@@ -10,23 +10,27 @@
     };
 #endif
 
+typedef unsigned long (*kallsyms_lookup_name_t)(const char *name);
+static kallsyms_lookup_name_t loaded_kallsyms_lookup_name = NULL;
+
 // ////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////
 
 static int fh_resolve_hook_address(struct ftrace_hook *hook) {
 #ifdef KPROBE_LOOKUP
-    typedef unsigned long (*kallsyms_lookup_name_t)(const char *name);
 
-    if (register_kprobe(&kp) != 0) {
-        rk_err("[fh_resolve_hook_address] register_kprobe() failed to register kprobe for kallsyms_lookup_name\n");
-        return -EINVAL;
+    if (loaded_kallsyms_lookup_name == NULL) {
+        if (register_kprobe(&kp) != 0) {
+            rk_err("[fh_resolve_hook_address] register_kprobe() failed to register kprobe for kallsyms_lookup_name\n");
+            return -EINVAL;
+        }
+
+        loaded_kallsyms_lookup_name = (kallsyms_lookup_name_t) kp.addr;
+        unregister_kprobe(&kp);
     }
-
-    const kallsyms_lookup_name_t kallsyms_lookup_name = (kallsyms_lookup_name_t) kp.addr;
-    unregister_kprobe(&kp);
 #endif
 
-    hook->address = kallsyms_lookup_name(hook->name);
+    hook->address = loaded_kallsyms_lookup_name(hook->name);
     if (!hook->address) {
         rk_err("[fh_resolve_hook_address] unresolved symbol: %s\n", hook->name);
         return -ENOENT;

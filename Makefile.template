@@ -1,5 +1,5 @@
-MODULE_NAME := kernelhooker
-PROD_MODULE_NAME := prod.kernelhooker
+MODULE_NAME := goodboi
+PROD_MODULE_NAME := prod.goodboi
 
 ####################################################
 ####################################################

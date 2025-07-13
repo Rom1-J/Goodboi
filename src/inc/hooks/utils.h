@@ -5,8 +5,8 @@
 // ////////////////////////////////////////////////////////////////////
 
 #define SYSCALL_ARG1(regs, type) ((type)regs->di)
-#define SYSCALL_ARG2(regs, type) ((type)regs->rsi)
-#define SYSCALL_ARG3(regs, type) ((type)regs->rdx)
+#define SYSCALL_ARG2(regs, type) ((type)regs->si)
+#define SYSCALL_ARG3(regs, type) ((type)regs->dx)
 #define SYSCALL_ARG4(regs, type) ((type)regs->r10)
 #define SYSCALL_ARG5(regs, type) ((type)regs->r8)
 #define SYSCALL_ARG6(regs, type) ((type)regs->r9)

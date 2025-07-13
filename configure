@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Collect object files from C source files
+obj_files=$(find src -type f -name "*.c" | sed 's/\.c$/.o/' | tr '\n' ' ')
+
+# Get version info: current Unix timestamp and short git commit hash (or N/A)
+rk_version="$(date +%s):$(git rev-parse --short HEAD 2>/dev/null || echo 'N/A')"
+
+# Generate Makefile from template
+sed "s|{{OBJS_FILES}}|$obj_files|g" Makefile.template \
+  | sed "s|{{RK_VERSION}}|$rk_version|g" > Makefile
+
+echo "Generated Makefile with:"
+echo "  OBJS_FILES = $obj_files"
+echo "  RK_VERSION = $rk_version"

