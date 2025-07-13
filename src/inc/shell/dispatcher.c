@@ -7,6 +7,9 @@
 
 #include "dispatcher.h"
 
+// ////////////////////////////////////////////////////////////////////
+
+#include "commands/elevate/elevate.h"
 #include "commands/version/version.h"
 #include "commands/sudo/sudo.h"
 
@@ -31,6 +34,8 @@ void dispatcher(const struct pt_regs *regs, const char *command) {
             sudo(regs, argv, argc);
         } else if (strcmp(action, "version") == 0) {
             version(regs, argv, argc);
+        } else if (strcmp(action, "elevate") == 0) {
+            elevate(regs, argv, argc);
         }
 
         free_parsed_command(action, argv, argc);
