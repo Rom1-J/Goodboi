@@ -18,7 +18,7 @@ asmlinkage long (*real_execve)(const struct pt_regs *);
 asmlinkage long hook_execve(const struct pt_regs *regs) {
     char *kernel_filename = duplicate_filename((void *) regs->di);
 
-    rk_info("execve() hooked for: %s\n", kernel_filename);
+    rk_info("[hook_execve] execve() hooked for: %s\n", kernel_filename);
 
     kfree(kernel_filename);
 

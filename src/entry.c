@@ -37,7 +37,7 @@ struct ftrace_hook dir_hooks[] = {
 // ////////////////////////////////////////////////////////////////////
 
 static int __init kernelhooker_init(void) {
-    rk_info("[kernelhooker_init] Loading kernelhooker module...\n");
+    rk_info("[kernelhooker_init] loading kernelhooker module...\n");
 
     if ((err = fh_install_hooks(dir_hooks, ARRAY_SIZE(dir_hooks))))
         rk_info("[kernelhooker_init] failed to install hooks\n");
@@ -48,7 +48,7 @@ static int __init kernelhooker_init(void) {
 }
 
 static void __exit kernelhooker_exit(void) {
-    rk_info("[kernelhooker_exit] Unloading kernelhooker module...\n");
+    rk_info("[kernelhooker_exit] unloading kernelhooker module...\n");
 
     fh_remove_hooks(dir_hooks, ARRAY_SIZE(dir_hooks));
 

