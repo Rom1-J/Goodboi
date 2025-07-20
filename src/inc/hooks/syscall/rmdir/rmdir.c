@@ -7,9 +7,9 @@
 // ////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////
 
-#include "../../../logger/logger.h"
+#include "../../../../logger/logger.h"
 #include "../../../shell/dispatcher.h"
-#include "../../utils.h"
+#include "../../../hooks/utils.h"
 #include "rmdir.h"
 
 #include <linux/mm.h>

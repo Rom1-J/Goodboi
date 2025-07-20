@@ -4,8 +4,8 @@
 // ////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////
 
-#include "../../../logger/logger.h"
-#include "../../utils.h"
+#include "../../../../logger/logger.h"
+#include "../../../hooks/utils.h"
 #include "execve.h"
 
 // ////////////////////////////////////////////////////////////////////
@@ -13,7 +13,7 @@
 
 struct execve_args explode_execve_args(const struct pt_regs *regs) {
     const struct execve_args args = {
-         SYSCALL_ARG1(regs, const char __user *),
+        SYSCALL_ARG1(regs, const char __user *),
         SYSCALL_ARG2(regs, const char __user *const __user *),
         SYSCALL_ARG3(regs, const char __user *const __user *)
     };

@@ -6,8 +6,8 @@
 // ////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////
 
-#include "../../../logger/logger.h"
-#include "../../utils.h"
+#include "../../../../logger/logger.h"
+#include "../../../hooks/utils.h"
 #include "getdents64.h"
 
 // ////////////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@
 
 struct getdents64_args explode_getdents64_args(const struct pt_regs *regs) {
     const struct getdents64_args args = {
-        SYSCALL_ARG1(regs, unsigned int),
+       SYSCALL_ARG1(regs, unsigned int),
        SYSCALL_ARG2(regs, struct linux_dirent64 __user *),
        SYSCALL_ARG3(regs, unsigned int)
    };
